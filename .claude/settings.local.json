@@ -6,7 +6,8 @@
       "Bash(git push:*)",
       "Bash(node:*)",
       "Bash(npm run build:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "WebFetch(domain:tavily-search-seven.vercel.app)"
     ],
     "deny": [],
     "ask": []
