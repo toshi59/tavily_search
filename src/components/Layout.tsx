@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Home, History, Settings, Menu, X } from 'lucide-react';
 
 interface LayoutProps {
@@ -75,7 +76,7 @@ export default function Layout({ children, currentPage = 'home' }: LayoutProps) 
             <ul className="space-y-2">
               {menuItems.map((item) => (
                 <li key={item.id}>
-                  <a
+                  <Link
                     href={item.href}
                     className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
                       currentPage === item.id
@@ -86,7 +87,7 @@ export default function Layout({ children, currentPage = 'home' }: LayoutProps) 
                   >
                     {item.icon}
                     <span>{item.label}</span>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

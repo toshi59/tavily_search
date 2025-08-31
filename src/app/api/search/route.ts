@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { TavilySearchAPIClient } from '@tavily/core';
+import { tavily } from '@tavily/core';
 
-const client = new TavilySearchAPIClient({ apiKey: process.env.TAVILY_API_KEY });
+const client = tavily({ apiKey: process.env.TAVILY_API_KEY });
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,8 +21,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = await client.search({
-      query: query,
+    const response = await client.search(query, {
       max_results: 20,
       search_depth: 'basic',
       include_answer: false,

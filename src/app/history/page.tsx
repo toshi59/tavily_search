@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import Layout from '@/components/Layout';
 import { History, Trash2, Search, Calendar, RotateCcw } from 'lucide-react';
 
@@ -122,13 +123,13 @@ export default function HistoryPage() {
             <p className="text-[var(--color-muted-foreground)] mb-4">
               検索を実行すると、ここに履歴が表示されます
             </p>
-            <a
+            <Link
               href="/"
               className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Search size={16} />
               検索を開始
-            </a>
+            </Link>
           </div>
         )}
       </div>
