@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Home, History, Settings, Menu, X } from 'lucide-react';
+import { useSearch } from '@/contexts/SearchContext';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -39,6 +40,7 @@ const menuItems: MenuItem[] = [
 
 export default function Layout({ children, currentPage = 'home' }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { results } = useSearch();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -87,6 +89,11 @@ export default function Layout({ children, currentPage = 'home' }: LayoutProps) 
                   >
                     {item.icon}
                     <span>{item.label}</span>
+                    {item.id === 'home' && results.length > 0 && (
+                      <span className="ml-auto bg-[var(--color-primary)] text-white text-xs px-2 py-0.5 rounded-full">
+                        {results.length}
+                      </span>
+                    )}
                   </Link>
                 </li>
               ))}

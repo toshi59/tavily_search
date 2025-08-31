@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Layout from '@/components/Layout';
 import { History, Trash2, Search, Calendar, RotateCcw } from 'lucide-react';
+import { useSearch } from '@/contexts/SearchContext';
 
 interface SearchHistoryItem {
   id: number;
@@ -14,6 +16,8 @@ interface SearchHistoryItem {
 
 export default function HistoryPage() {
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
+  const { setQuery } = useSearch();
+  const router = useRouter();
 
   useEffect(() => {
     // ローカルストレージから検索履歴を読み込み
@@ -35,8 +39,9 @@ export default function HistoryPage() {
   };
 
   const repeatSearch = (query: string) => {
-    // 検索クエリをURLパラメータとしてホームページに渡す
-    window.location.href = `/?q=${encodeURIComponent(query)}`;
+    // 検索クエリをコンテキストに設定してホームページに遷移
+    setQuery(query);
+    router.push('/');
   };
 
   const formatDate = (timestamp: string) => {

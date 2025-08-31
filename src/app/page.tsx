@@ -1,20 +1,21 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Layout from '@/components/Layout';
 import { Search, Loader2 } from 'lucide-react';
-
-interface SearchResult {
-  title: string;
-  url: string;
-  content: string;
-}
+import { useSearch } from '@/contexts/SearchContext';
 
 export default function Home() {
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const {
+    query,
+    setQuery,
+    results,
+    setResults,
+    isLoading,
+    setIsLoading,
+    progress,
+    setProgress,
+  } = useSearch();
 
   useEffect(() => {
     // URLパラメータから検索クエリを取得（履歴からの再検索用）
@@ -25,7 +26,7 @@ export default function Home() {
       // URLを清潔にする
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, []);
+  }, [setQuery]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -188,11 +189,14 @@ export default function Home() {
         )}
 
         {/* 初期状態のメッセージ */}
-        {!isLoading && results.length === 0 && !query && (
+        {!isLoading && results.length === 0 && (
           <div className="text-center py-12">
             <Search className="mx-auto mb-4 text-[var(--color-muted-foreground)]" size={48} />
             <p className="text-[var(--color-muted-foreground)] text-lg">
-              キーワードを入力して検索を開始してください
+              {query 
+                ? `「${query}」の検索結果がありません` 
+                : 'キーワードを入力して検索を開始してください'
+              }
             </p>
           </div>
         )}
