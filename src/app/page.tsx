@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import Layout from '@/components/Layout';
-import { Search, Loader2 } from 'lucide-react';
+import { Search, Loader2, FileText, Sparkles } from 'lucide-react';
 import { useSearch } from '@/contexts/SearchContext';
 
 export default function Home() {
@@ -15,6 +15,10 @@ export default function Home() {
     setIsLoading,
     progress,
     setProgress,
+    summary,
+    setSummary,
+    summaryLoading,
+    setSummaryLoading,
   } = useSearch();
 
   useEffect(() => {
@@ -36,6 +40,7 @@ export default function Home() {
     setIsLoading(true);
     setProgress(0);
     setResults([]);
+    setSummary('');
 
     // プログレスバーのアニメーション
     const progressInterval = setInterval(() => {
@@ -72,6 +77,11 @@ export default function Home() {
         };
         searchHistory.unshift(newEntry);
         localStorage.setItem('searchHistory', JSON.stringify(searchHistory.slice(0, 50))); // 最新50件まで保存
+
+        // サマリを生成
+        if (data.results.length > 0) {
+          generateSummary(query, data.results);
+        }
       } else {
         console.error('Search error:', data.error);
         alert('検索でエラーが発生しました: ' + data.error);
@@ -86,6 +96,38 @@ export default function Home() {
         setIsLoading(false);
         setProgress(0);
       }, 300);
+    }
+  };
+
+  const generateSummary = async (searchQuery: string, searchResults: { title: string; url: string; content: string }[]) => {
+    setSummaryLoading(true);
+    setSummary('');
+
+    try {
+      const response = await fetch('/api/summarize', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: searchQuery,
+          results: searchResults
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSummary(data.summary);
+      } else {
+        console.error('Summary generation error:', data.error);
+        setSummary('サマリの生成中にエラーが発生しました。');
+      }
+    } catch (error) {
+      console.error('Summary generation error:', error);
+      setSummary('サマリの生成中にエラーが発生しました。');
+    } finally {
+      setSummaryLoading(false);
     }
   };
 
@@ -151,6 +193,44 @@ export default function Home() {
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
+          </div>
+        )}
+
+        {/* サマリ表示エリア */}
+        {(summary || summaryLoading) && (
+          <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="text-[var(--color-primary)]" size={20} />
+              <h2 className="text-lg font-semibold text-[var(--color-foreground)]">
+                AI サマリ
+              </h2>
+              {summaryLoading && (
+                <Loader2 className="animate-spin text-[var(--color-primary)]" size={16} />
+              )}
+            </div>
+            
+            {summaryLoading ? (
+              <div className="space-y-3">
+                <div className="h-4 bg-blue-100 rounded animate-pulse"></div>
+                <div className="h-4 bg-blue-100 rounded animate-pulse w-4/5"></div>
+                <div className="h-4 bg-blue-100 rounded animate-pulse w-3/5"></div>
+                <p className="text-sm text-[var(--color-muted-foreground)] italic">
+                  検索結果を分析してサマリを生成しています...
+                </p>
+              </div>
+            ) : (
+              <div className="prose prose-sm max-w-none">
+                <div className="whitespace-pre-line text-[var(--color-foreground)] leading-relaxed">
+                  {summary}
+                </div>
+                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-blue-200">
+                  <FileText size={14} className="text-[var(--color-muted-foreground)]" />
+                  <span className="text-sm text-[var(--color-muted-foreground)]">
+                    {results.length}件の検索結果から生成
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

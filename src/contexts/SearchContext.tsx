@@ -17,6 +17,10 @@ interface SearchContextType {
   setIsLoading: (isLoading: boolean) => void;
   progress: number;
   setProgress: React.Dispatch<React.SetStateAction<number>>;
+  summary: string;
+  setSummary: (summary: string) => void;
+  summaryLoading: boolean;
+  setSummaryLoading: (loading: boolean) => void;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
@@ -38,6 +42,8 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [summary, setSummary] = useState('');
+  const [summaryLoading, setSummaryLoading] = useState(false);
 
   return (
     <SearchContext.Provider
@@ -50,6 +56,10 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         setIsLoading,
         progress,
         setProgress,
+        summary,
+        setSummary,
+        summaryLoading,
+        setSummaryLoading,
       }}
     >
       {children}
